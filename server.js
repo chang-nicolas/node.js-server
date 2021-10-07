@@ -22,10 +22,7 @@ app.use("/api/customers", customerRouter)
 app.use("/api/project", projectRouter)
 app.use("/api/estate", estateRouter)
 
-app.post("/", function (req, res) {
-  let tmp = req.body;
-  res.send(tmp);
-});
+app.use(express.static(__dirname + "/build"));
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
