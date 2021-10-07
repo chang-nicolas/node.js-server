@@ -1,0 +1,95 @@
+const express = require("express");
+const CryptoJS = require('crypto-js')
+
+const userModel = require("../../models/user");
+
+const router = express.Router();
+
+function encryptPassword(password) {
+  return CryptoJS.AES.encrypt(password, 'my-secret-key@123').toString();
+}
+
+function decryptPassword(password) {
+  const bytes = CryptoJS.AES.decrypt(password, 'my-secret-key@123');
+  return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+}
+
+router.post("/add-user", (req, res) => {
+  let pwd = encryptPassword(req.body.password);
+  console.log(pwd)
+  const userData = new userModel({
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    email: req.body.email,
+    password: pwd,
+    phonenumber: req.body.phonenumber,
+    role: req.body.role,
+  });
+  // console.log(userData)
+  userData.save().then((user) => res.send(user));
+});
+
+router.post("/login", (req, res) => {
+
+  userModel.findOne({ email: req.body.email }).then((user) => {
+    if (user && req.body.password == decryptPassword(user.password)) {
+
+     let ts = Date.now();
+
+      let date_ob = new Date(ts);
+      let date = date_ob.getDate();
+      let month = date_ob.getMonth() + 1;
+      let year = date_ob.getFullYear();
+      let today = (year + "-" + month + "-" + date);
+      user.lastLogin = today;
+      console.log(user);
+      user.save().then(user => res.json({user: user, success: true}))
+    }
+    else res.json({ message: "Invalid user account" });
+  });
+});
+
+router.get("/", (req, res) => {
+  console.log('sdsd')
+  userModel.find({ role: 'admin' }).then((users) => {
+    res.json(users);
+  });
+});
+
+router.post("/update/:id", (req, res) => {
+  let myquery = { _id: req.params.id };
+  // console.log(req.body)
+
+  let newvalues = {
+    $set: {
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      email: req.body.email,
+      password: encryptPassword(req.body.password),
+      phonenumber: req.body.phonenumber,
+      role: req.body.role,
+    },
+  };
+  console.log(newvalues)
+  userModel.updateOne(myquery, newvalues).then(user => {
+    console.log(req.body)
+    res.json(req.body)})
+});
+
+router.delete("/:id", (req, res) => {
+  let myquery = { _id: req.params.id };
+  console.log(myquery)
+  userModel.deleteOne(myquery, function (err, result) {
+    res.json({ msg: "Success" });
+  });
+});
+
+router.get("/:id", (req, res) => {
+  userModel.findById(req.params.id)
+    .then(user => {
+      res.json(user)
+    })
+    .catch(err => res.json({ error: 'No user with such id' }))
+})
+
+module.exports = router;
