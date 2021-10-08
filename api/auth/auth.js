@@ -11,6 +11,7 @@ function encryptPassword(password) {
 
 function decryptPassword(password) {
   const bytes = CryptoJS.AES.decrypt(password, 'my-secret-key@123');
+  console.log(bytes.toString(CryptoJS.enc.Utf8))
   return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 }
 
