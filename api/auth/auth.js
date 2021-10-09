@@ -17,7 +17,6 @@ function decryptPassword(password) {
 
 router.post("/add-user", (req, res) => {
   let pwd = encryptPassword(req.body.password);
-  console.log(pwd)
   const userData = new userModel({
     firstname: req.body.firstname,
     lastname: req.body.lastname,
@@ -26,7 +25,6 @@ router.post("/add-user", (req, res) => {
     phonenumber: req.body.phonenumber,
     role: req.body.role,
   });
-  // console.log(userData)
   userData.save().then((user) => res.send(user));
 });
 
@@ -43,7 +41,6 @@ router.post("/login", (req, res) => {
       let year = date_ob.getFullYear();
       let today = (year + "-" + month + "-" + date);
       user.lastLogin = today;
-      console.log(user);
       user.save().then(user => res.json({user: user, success: true}))
     }
     else res.json({ message: "Invalid user account" });
@@ -51,7 +48,6 @@ router.post("/login", (req, res) => {
 });
 
 router.get("/", (req, res) => {
-  console.log('sdsd')
   userModel.find({ role: 'admin' }).then((users) => {
     res.json(users);
   });
@@ -59,7 +55,6 @@ router.get("/", (req, res) => {
 
 router.post("/update/:id", (req, res) => {
   let myquery = { _id: req.params.id };
-  // console.log(req.body)
 
   let newvalues = {
     $set: {
@@ -71,15 +66,12 @@ router.post("/update/:id", (req, res) => {
       role: req.body.role,
     },
   };
-  console.log(newvalues)
   userModel.updateOne(myquery, newvalues).then(user => {
-    console.log(req.body)
     res.json(req.body)})
 });
 
 router.delete("/:id", (req, res) => {
   let myquery = { _id: req.params.id };
-  console.log(myquery)
   userModel.deleteOne(myquery, function (err, result) {
     res.json({ msg: "Success" });
   });

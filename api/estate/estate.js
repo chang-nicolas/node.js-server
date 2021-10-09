@@ -14,7 +14,6 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  console.log(req.body.project_code + "ddd");
   const newEstate = new estate({
     project_code: req.body.project_code,
     project: req.body.project,
@@ -41,7 +40,6 @@ router.post("/", (req, res) => {
     vat_on_taf: req.body.vat_on_taf,
     location_map: req.body.location_map,
   });
-  console.log(newEstate);
   newEstate.save().then((result) => {
     res.json(result);
   });
@@ -55,7 +53,6 @@ router.delete("/:id", (req, res) => {
 
 router.post("/update/:id", (req, res) => {
   let myquery = { _id: req.params.id };
-  // console.log(req.body)
 
   let newvalues = {
     $set: {
@@ -85,7 +82,6 @@ router.post("/update/:id", (req, res) => {
       location_map: req.body.location_map,
     },
   };
-  console.log(newvalues);
   estate.updateOne(myquery, newvalues, function (err, user) {
     if (err) res.json({ message: err });
     res.json(req.body);
@@ -93,7 +89,6 @@ router.post("/update/:id", (req, res) => {
 });
 
 router.post("/getbycode", (req, res) => {
-  console.log(req.body.title);
   estate
     .find({ project_code: req.body.title })
     .then((units) => res.json(units));

@@ -14,18 +14,15 @@ router.get("/", (req, res) => {
 });
 
 router.post("/add-project", (req, res) => {
-  console.log(req.body);
   const newProject = new project({
     title: req.body.title,
     currency: req.body.currency,
     desc: req.body.description,
   });
-  console.log(newProject);
   newProject.save().then(res.json({ msg: "Saved" }));
 });
 
 router.delete("/:id", (req, res) => {
-  console.log(req.params.id);
   let myquery = { _id: req.params.id };
   project.deleteOne(myquery, function (err, result) {
     res.json({ msg: "success" });
@@ -34,7 +31,6 @@ router.delete("/:id", (req, res) => {
 
 router.post("/update", (req, res) => {
   let myquery = { _id: req.body._id };
-  // console.log(req.body)
 
   let newvalues = {
     $set: {
@@ -43,7 +39,6 @@ router.post("/update", (req, res) => {
       currency: req.body.currency,
     },
   };
-  console.log(myquery);
   project.updateOne(myquery, newvalues, function (err, user) {
     if (err) res.json({ message: err });
     res.json(req.body);
