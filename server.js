@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 const dbo = require("./db/conn");
 
-app.use(express.static(__dirname + "/build"));
+// app.use(express.static(__dirname + "/build"));
 
 const authRouter = require("./api/auth/auth");
 const customerRouter = require("./api/customer/customer")
